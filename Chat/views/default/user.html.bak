@@ -1,0 +1,91 @@
+{{extend 'userLayout.html'}}
+{{if (request.vars._next and request.vars._next[-3:]=='f=1') or request.vars.f=='1':}}
+    <br/>
+    <center><div style="border-radius:15px;box-shadow:#ccc 0px 0px 25px;padding:10px;width:50%;min-width:550px">
+        {{if request.args(0)=='login':}}<h2>Please Login Into Your ChatGae Account</h2>{{elif request.args(0)=='register':}}<h2>Please Enter Your details</h2>{{pass}}
+        {{=form}}
+        {{if request.args(0)=='login':}}
+        {{if not 'register' in auth.settings.actions_disabled:}}
+        <br/><a href="{{=URL(r=request,args='register',vars={'f':1})}}">Register</a>
+        {{pass}}
+        {{pass}}
+    </div></center>
+{{else:}}
+{{response.menu = []}}
+    
+    <div id="header"> <!-- header and login nav -->
+      <h1>
+        <span id="appname">{{=request.application.capitalize()}}</span>GAE
+      </h1>
+      <div style="clear: both;"></div><!-- Clear the divs -->
+    </div><!-- header  -->
+    
+    <div id="statusbar"><!-- statusbar is menu zone -->
+      <a target='_blank' href="{{=URL('static','chatGae.crx')}}"><img src="{{=URL('static','images/install/button_0.png')}}" style="margin:5px 0px 0px 10px;cursor:pointer" onmouseover="this.src='/Chat/static/images/install/button_1.png'" onmouseout="this.src='/Chat/static/images/install/button_0.png'"/></a>
+      {{=MENU(response.menu,_class='sf-menu')}}
+      <script type="text/javascript">
+        jQuery(document).ready(function(){
+        jQuery('ul.sf-menu').superfish();});
+      </script>
+
+      <!-- AddToAny BEGIN -->
+      <div style="padding: 7px; float:right;" class="a2a_kit a2a_default_style"><a class="a2a_dd" href="http://www.addtoany.com/share_save">Share</a></div><script type="text/javascript" src="http://static.addtoany.com/menu/page.js"></script>
+      <!-- AddToAny END -->
+
+      <div style="clear: both;"></div><!-- Clear the divs -->   
+    </div><!-- statusbar -->
+    
+    <div id="page"> <!-- Here my central body -->     
+
+      <!-- content -->
+      <div id="content" {{=XML(style_content)}} >
+          <div style="float:left;width:53%;border-right:1px solid #ccc">
+          <h2>{{=T( request.args(0).replace('_',' ').capitalize() )}}</h2>
+            <div id="web2py_user_form">
+            {{=form}}
+            {{if request.args(0)=='login':}}
+            {{if not 'register' in auth.settings.actions_disabled:}}
+            <br/><a href="{{=URL(r=request,args='register')}}">Register</a>
+            {{pass}}
+            {{if not 'request_reset_password' in auth.settings.actions_disabled:}}
+            <br/><a href="{{=URL(r=request,args='request_reset_password')}}">Lost Password</a>
+            {{pass}}
+            {{pass}}
+            </div>
+          </div>
+          <div style="float:left;width:45%">
+              <ul>
+                  <li>ChatGAE is a chat application which can be used while on any website to chat with users registered on this site.</li>
+                  <li><b>For Website owners</b>, download <a href="{{=URL('static','js/chatgae.js')}}">this</a> file to your Server&rsquo;s root directory and paste this code just before the closing of body tag in your pages.<br/><b><i>&lt;script src="/chatgae.js"&gt;&lt;/script&gt;</i></b></li>
+                  <li>We are going to release our Firefox plugins for this app on December 10th, thereafter there will be no need for the above javascript.</li>
+              </ul>
+          </div>
+            <script language="javascript">
+            <!--
+             jQuery("#web2py_user_form input:visible:enabled:first").focus();
+            //-->
+            </script>
+      </div>
+      <!-- content -->
+
+      {{if right_sidebar_enabled:}}
+          <div id="right_sidebar" {{=XML(right_sidebar_style)}} >
+            <div style="padding: 4px;">
+              {{block right_sidebar}}Content Right Sidebar{{end}}
+            </div>
+      </div><!-- right_sidebar -->
+          {{pass}}
+
+
+      <div style="clear: both;"></div><!-- Clear the divs -->
+      
+    </div><!-- page -->                         
+    
+    <div id="footer">
+      <a href="http://www.web2py.com/" style="float: left; padding-right: 6px;">
+        <img src="{{=URL('static','images/poweredby.png')}}"/>
+      </a>
+      {{=T('Copyright')}} &#169; 2011               
+      <div style="clear: both;"></div><!-- Clear the divs -->
+    </div><!-- footer -->           
+{{pass}}

@@ -1,0 +1,5 @@
+{{extend 'default/layout.html'}}
+{{if friends:}}<h2>Select a Friend</h2>{{else:}}<h2 style="color:red;text-align:center">No Friends :(</h2>{{pass}}
+{{for i in friends:}}
+    <a href="{{=URL(f='historyF',vars={'friendId':i.id})}}">{{=i.first_name+" "+i.last_name}}</a><br/>
+{{pass}}

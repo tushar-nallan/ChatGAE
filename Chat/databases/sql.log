@@ -1,0 +1,130 @@
+timestamp: 2011-11-15T00:15:30.871778
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512)
+);
+success!
+timestamp: 2011-11-15T00:15:30.930357
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2011-11-15T00:15:30.970573
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user(id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group(id) ON DELETE CASCADE
+);
+success!
+timestamp: 2011-11-15T00:15:31.031674
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group(id) ON DELETE CASCADE,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2011-11-15T00:15:31.070692
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user(id) ON DELETE CASCADE,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2011-11-15T00:15:31.140585
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user(id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    url CHAR(512),
+    uuid CHAR(512)
+);
+success!
+timestamp: 2011-11-15T01:26:17.189482
+ALTER TABLE auth_user ADD status CHAR(512);
+timestamp: 2011-11-15T01:27:56.290668
+ALTER TABLE auth_user ADD friends_ids TEXT;
+timestamp: 2011-11-15T01:32:36.611465
+ALTER TABLE auth_user ADD group_ids TEXT;
+timestamp: 2011-11-15T01:32:36.686975
+ALTER TABLE auth_user ADD block_ids TEXT;
+timestamp: 2011-11-15T01:54:21.366531
+CREATE TABLE text_replacements(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    word CHAR(512),
+    replace CHAR(512)
+);
+success!
+timestamp: 2011-11-15T01:54:21.438167
+CREATE TABLE image_replacements(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    word CHAR(512),
+    replace CHAR(512),
+    replace_img BLOB
+);
+success!
+timestamp: 2011-11-15T01:54:21.509269
+CREATE TABLE settings(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    userId CHAR(512),
+    history CHAR(1),
+    text_replacement_id TEXT,
+    image_replacement_id TEXT
+);
+success!
+timestamp: 2011-11-15T02:10:06.134034
+CREATE TABLE groups(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    members TEXT,
+    moderators TEXT
+);
+success!
+timestamp: 2011-11-15T02:10:06.204627
+CREATE TABLE history(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user1 CHAR(512),
+    user2 CHAR(512),
+    chat TEXT,
+    read CHAR(1)
+);
+success!
+timestamp: 2011-11-15T12:46:03.930588
+CREATE TABLE User(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nick CHAR(512),
+    channel_id CHAR(512)
+);
+success!
+timestamp: 2011-11-15T12:46:04.012950
+CREATE TABLE message(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    text TEXT,
+    user INTEGER REFERENCES User(id) ON DELETE CASCADE
+);
+success!
+timestamp: 2011-11-15T12:49:28.156615
+ALTER TABLE auth_user ADD channel_id CHAR(512);
+timestamp: 2011-11-15T20:31:21.178049
+ALTER TABLE auth_user ADD flag CHAR(512);
+timestamp: 2011-11-17T17:08:26.726355
+ALTER TABLE auth_user ADD friendreq_ids TEXT;
+timestamp: 2011-11-17T17:08:26.890164
+ALTER TABLE auth_user ADD friendpending_ids TEXT;
+timestamp: 2011-11-17T17:08:26.949726
+ALTER TABLE auth_user ADD offline CHAR(1);
+timestamp: 2011-11-21T10:40:07.465960
+ALTER TABLE history ADD timestamp CHAR(512);
+timestamp: 2011-11-21T10:40:07.616982
+ALTER TABLE history ADD userids CHAR(512);

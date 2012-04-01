@@ -1,0 +1,7 @@
+friendsList.push(friend);
+                var a = "<a id='"+friend+"'>"+friend+"</a>";
+                var txt = document.createElement("div");
+                txt.innerHTML = a;
+                txt.style.cursor="pointer";
+                txt.setAttribute("onclick","openChat(\""+friend+"\");");
+                document.getElementById("friendsListPage").appendChild(txt);

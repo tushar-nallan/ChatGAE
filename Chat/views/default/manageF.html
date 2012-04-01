@@ -1,0 +1,60 @@
+{{extend 'default/layout.html'}}
+<style>
+    .friends{margin-left:10px}
+</style>{{if friends:}}
+<div style="margin-left:30px">
+    <h2>List of Friends</h2>
+    <div id="allFriends">{{for i in friends:}}{{row=db.auth_user[i]}}
+        <div class="friends" id="friend{{=i}}">{{=row.first_name+" "+row.last_name}} <button id="delete{{=i}}" >Delete</button> <button id="block{{=i}}" >{{if i in blockedF:}}Unblock{{else:}}Block{{pass}}</button></div>
+        {{pass}}
+    </div>
+</div>
+<script>
+    $(".friends button").click(function(){
+        if($(this).html()=='Delete'){
+            var userId=$(this).attr('id').substr(6);
+            $.ajax({
+                url: '/Chat/default/removeF/',
+                type: 'POST',
+                data:{
+                    userId:{{=auth.user.id}},
+                    removeIds:userId,
+                },
+                success: function(data){
+                    $("#friend"+userId).remove();
+                }
+            });
+        }
+        else if($(this).html()=='Block'){
+            var thisBak=$(this);
+            var userId=$(this).attr('id').substr(5);
+            $.ajax({
+                url: '/Chat/default/blockF/',
+                type: 'POST',
+                data:{
+                    userId:{{=auth.user.id}},
+                    blockIds:userId,
+                },
+                success: function(data){
+                    $(thisBak).html("Unblock");
+                }
+            });
+        }
+        else if($(this).html()=='Unblock'){
+            var thisBak=$(this);
+            var userId=$(this).attr('id').substr(5);
+            $.ajax({
+                url: '/Chat/default/unblockF/',
+                type: 'POST',
+                data:{
+                    userId:{{=auth.user.id}},
+                    unblockIds:userId,
+                },
+                success: function(data){
+                    $(thisBak).html("Block");
+                }
+            });
+        }
+    });
+</script>
+{{else:}}<center><h2 style="color:red">No Friends :(</h2></center>{{pass}}

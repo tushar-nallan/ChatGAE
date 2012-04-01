@@ -1,0 +1,12 @@
+{
+  "name": "Chat Gae",
+  "description": "Enjoy chatting with friends while working on any website. Requires only a one time registration on ",
+  "version": "0.1",
+  "icons": { "48": "icon48.png","128": "icon128.png","16": "icon16.png" },
+  "homepage_url":"http://chatgae.appspot.com",
+  "browser_action": {
+      "default_icon": "icon.png",
+      "default_title": "Chat Gae",
+      "default_popup": "popup.html"
+  }
+}

@@ -1,0 +1,4 @@
+{{extend 'default/layout.html'}}
+<center><h4 style="color:red">Changes will be reflected instantly...</h4></center>
+<div style="float:left;width:50%"><b>Word Replacements</b>{{for i in existingTextMacros:}}<div style="border-bottom:2px solid #333">{{=i}}</div><br/>{{pass}}{{if textMacro:}}{{=textMacro}}{{pass}}</div>
+<div style="float:left;width:50%"><b>Image Replacements</b>{{for i in existingImageMacros:}}{{=i}}<br/>{{pass}}{{if imgMacro:}}{{=imgMacro}}{{pass}}</div>

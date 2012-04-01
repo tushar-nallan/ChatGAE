@@ -1,0 +1,4 @@
+{{extend 'default/layout.html'}}{{otherUserName=otherUser.first_name+" "+otherUser.last_name}}{{thisUserName=thisUser.first_name+" "+thisUser.last_name}}
+{{for i in history:}}
+    {{if i['userIds']==str(thisUser.id)+'-'+str(otherUser.id):}}me{{else:}}{{=otherUserName}}{{pass}} : {{=XML(i['chat'])}}<span style="float:right">{{=i['timeStamp']}}</span><br/>
+{{pass}}

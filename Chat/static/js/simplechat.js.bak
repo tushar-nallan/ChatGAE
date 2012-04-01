@@ -1,0 +1,32 @@
+$(document).ready(function(){
+    var chat_token = $('#channel_api_params').attr('chat_token');
+    var channel = new goog.appengine.Channel(chat_token);
+    var socket = channel.open();
+    socket.onopen = function(){
+    };
+    socket.onmessage = function(m){
+        alert('message came');
+        var data = $.parseJSON(m.data);
+        showChatBox(data['from']);
+        $('#chatBoxMessageContainer'+data['from']).append(data['html']);
+        var objDiv = document.getElementById("chatBoxMessageContainer"+data['from']);
+        objDiv.scrollTop = objDiv.scrollHeight;
+    };
+    socket.onerror =  function(err){
+        alert("Error => "+err.description);
+    };
+    socket.onclose =  function(){
+        alert("channel closed");
+    };
+    
+    $(window).unload(function (){
+        var channel_id = $('#channel_api_params').attr('channel_id');
+                $.post('/disconnect/', {channel_id:channel_id},
+                    function(data) {
+                        $('#center').append(data);
+                        var objDiv = document.getElementById("center");
+                        objDiv.scrollTop = objDiv.scrollHeight;
+                });
+    });
+    alert("script end");
+});

@@ -1,0 +1,105 @@
+{{extend 'layout.html'}}
+<style>
+#selfInfo{font-size:1.2em;padding-left:15px;cursor:pointer;margin-left:-10px}
+.web2py-menu-vertical li a{font-size:1.2em;padding-left:15px;cursor:pointer}
+.vidChat{float:right;cursor:pointer}
+</style>
+
+<div id="channel_api_params" style="display:none;" chat_token="{{=chat_token}}" channel_id="{{=db.auth_user[auth.user.id].channel_id}}" user_id="{{=auth.user.id}}"></div>
+
+<h3 style="margin-left:3px;width:170px">Chat 
+    <a target="_blank" href="{{=URL(f='settings')}}"><img src="{{=URL('static','images/settings.gif')}}" style="opacity: 0.6;float:right;width:25px;cursor:pointer" onmouseover="this.style.opacity=1;this.filters.alpha.opacity=100" onmouseout="this.style.opacity=0.6;this.filters.alpha.opacity=60"/></a>
+    <a target="_blank" href="{{=URL(f='history')}}"><img src="{{=URL('static','images/history.jpg')}}" style="opacity: 0.6;float:right;width:25px;cursor:pointer" onmouseover="this.style.opacity=1;this.filters.alpha.opacity=100" onmouseout="this.style.opacity=0.6;this.filters.alpha.opacity=60"/></a>
+</h3>
+
+      <input type="text" id="addFriend" placeholder="Search People by Email..." style="height:1.7em;position:relative;top:-10px;width:165px;padding:3px" onkeydown='sendFriendReq(event)'/><br/>
+      <ul class="sf-menu">
+          <li class="web2py-menu-expand">
+              <a>
+                  <div id="selfInfo" class="{{if db.auth_user[auth.user.id].offline or db.auth_user[auth.user.id].flag=='Invisible':}}offline{{elif db.auth_user[auth.user.id].flag=='Available':}}online{{elif db.auth_user[auth.user.id].flag=='Busy':}}busy{{pass}}" value="{{=auth.user.id}}">{{=db.auth_user[auth.user.id].first_name+" "+db.auth_user[auth.user.id].last_name}}</div>
+              </a>
+              <ul class="web2py-menu-vertical">
+                  <li><a class='online' onclick="changeStatus('Available')">Available</a></li>
+                  <li><a class='busy' onclick="changeStatus('Busy')">Busy</a></li>
+                  <li><a class='offline' onclick="changeStatus('Invisible')">Invisible</a></li>
+              </ul>
+          </li>
+      </ul>
+      <script type="text/javascript">
+        jQuery(document).ready(function(){
+        jQuery('ul.sf-menu').superfish();});
+      </script>
+      <div id="statusBar" style="margin:-10px 0 10px 20px;width:150px;color:grey;cursor:pointer">{{=db.auth_user[auth.user.id].status or "Click Here to set your Status.."}}</div>
+      <div id="changeStatus" style="display:none"><input style="margin-left:12px" type="text" id="changeStatusInput" value="{{=db.auth_user[auth.user.id].status}}"/></div>
+      <div id="frndReqs">
+      {{for req in friendReqs:}}
+      <div id='reqUserId{{=req}}' class='addReq'>Accept {{=db.auth_user[req].first_name+" "+db.auth_user[req].last_name}}</div><span class='yesnobuttons' id="yesnobuttons{{=req}}"><button onclick='sendReqDec(true,{{=req}})'>Ok</button> <button onclick='sendReqDec(false,{{=req}})'>No</button><br/></span>
+      {{pass}}
+      </div>
+      <div id="friends_list">{{for friend in friends:}}
+      <div class="friend {{if friend.offline or db.auth_user[friend.id].flag=='Invisible':}}offline{{elif friend.flag=='Available':}}online{{elif friend.flag=='Busy':}}busy{{pass}}" id="friend{{=friend.id}}" value="{{=friend.id}}">
+          {{=friend.first_name+" "+friend.last_name}}</div><center id='status{{=friend.id}}' style="color:grey;font-size:12px">{{=friend.status}}</center>{{pass}}
+      <div id='startGroupChat' class='friend'>-Group Chat-</div>
+    </div>
+    <div id="chats" style="right:20%">
+        <div id="groupChat" class="chatbox" style='display:none'>
+            <div class="headerContainer">
+                <a class="closeButton" onclick="closeChatBox('Group')">X</a><p class="headerMessage"><b id='groupMemNames'></b></p>
+            </div>
+            <div class="chatBoxMessagesContainer" id="chatBoxMessageContainerGroup"></div>
+            <textarea class="chatTextArea" id="textareaGroup" cols="25" rows="2" onkeydown="textAreaKeyDown(event,'Group')"></textarea><br>
+        </div>
+    </div>
+<script>
+    function onCreationComplete(event) {
+        if (event.objectID == "videoSelf") {
+            var url = media_url + "?publish=" + $('#channel_api_params').attr('channel_id');;
+            getFlashMovie(event.objectID).setProperty("src", url);
+        }
+        else if(event.objectID == "videoOther")
+        {
+//            alert("Other SWF VideoOther onCreation complete :"+toUserVidTok)
+            getFlashMovie(event.objectID).setProperty("src", toUserVidTok);
+            getFlashMovie(event.objectID).setProperty("cameraQuality",1);
+        }
+    }
+    
+    function onPropertyChange(event) {
+//        alert(event.property+" "+event.newValue)
+        if ((event.property == "nearID")&&(event.objectID=='videoSelf')) {
+//            alert("nearid created from:"+event.objectID+" Now in onPropChange: "+event.newValue);
+//            alert("To user :"+toUserVidChat);
+            src = media_url + "?play=" + $('#channel_api_params').attr('channel_id') + "&farID=" + event.newValue;
+//            alert("Created url to send:"+src);
+            $.ajax({
+                url: '/Chat/default/transferVidToks/',
+                type: 'POST',
+                data:{
+                    userId:toUserVidChat,
+                    vidTok:src
+                },
+                success: function(data){
+                    if(data=='False') 
+                    {
+                        alert("Video Chat Failed");
+                    }
+                }
+            });
+//            alert('ajax done');
+        }
+    }
+    function startSelfVidChat(vidUserId){
+    if(document.getElementById("selfVidBox")==null)
+    {
+    var vidBox="<object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000'            id='videoSelf' width='230' height='230'            codebase='http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab'>            <param name='movie' value='/Chat/static/VideoIO.swf' />            <param name='quality' value='0' /> <param name='cameraQuality' value='1' />           <param name='bgcolor' value='#000000' />            <param name='allowFullScreen' value='true' />            <param name='allowScriptAccess' value='always' />            <param name='flashVars' value='controls=true' />            <embed src='/Chat/static/VideoIO.swf' quality='0' cameraQuality='1'  bgcolor='#000000'       width='230' height='230' name='videoSelf' align='middle'                play='true' loop='false' quality='0'    cameraQuality='1'            allowFullScreen='false'                allowScriptAccess='always'                flashVars='controls=true'                type='application/x-shockwave-flash'                pluginspage='http://www.adobe.com/go/getflashplayer'>            </embed>    </object>"
+    $("body").append("<div id='selfVidBox' style='width:230px;height:230px;background-color:black;position:fixed;top:10px;right:10px'>"+vidBox+"</div>");
+    }
+    toUserVidChat=vidUserId.substr(3);//Changing this wont affect sending near id to other frnd
+}
+    function startOtherVidChat(userId,vidTok){
+//    alert("StartOtherVidChat Initiated with:"+userId+":::"+vidTok);
+    var vidBox="<object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000'            id='videoOther' width='230' height='230'            codebase='http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab'>            <param name='movie' value='/Chat/static/VideoIO.swf' />            <param name='quality' value='high' />            <param name='bgcolor' value='#000000' />            <param name='allowFullScreen' value='true' />            <param name='allowScriptAccess' value='always' />            <param name='flashVars' value='controls=true' />            <embed src='/Chat/static/VideoIO.swf' quality='high' bgcolor='#000000'       width='230' height='230' name='videoOther' align='middle'                play='true' loop='false' quality='high'                allowFullScreen='true'                allowScriptAccess='always'                flashVars='controls=true'                type='application/x-shockwave-flash'                pluginspage='http://www.adobe.com/go/getflashplayer'>            </embed>    </object>"
+    $("#user"+userId+" .headerContainer").after("<div id='vidBox"+userId+"' style='width:230px;height:230px;background-color:black;'>"+vidBox+"</div>");
+    toUserVidTok=vidTok;
+}
+</script>
